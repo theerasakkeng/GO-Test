@@ -7,7 +7,6 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// var db *sql.DB
 var db *sqlx.DB
 
 type Brands_Model struct {
