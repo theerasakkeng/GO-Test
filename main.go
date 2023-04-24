@@ -1,57 +1,41 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
+
 	_ "github.com/denisenkom/go-mssqldb"
+	"github.com/jmoiron/sqlx"
 )
 
-var db *sql.DB
+// var db *sql.DB
+var db *sqlx.DB
 
 type Brands_Model struct {
-	brand_id   int
-	brand_name string
+	Brand_Id   int    `db:"brand_id"`
+	Brand_Name string `db:"brand_name"`
 }
 
 func main() {
 	var err error
-	db, err = sql.Open("sqlserver", "sqlserver://sa:Keng1234@localhost?database=TestDB")
+	db, err = sqlx.Open("sqlserver", "sqlserver://sa:Keng1234@localhost?database=TestDB")
 	if err != nil {
 		panic(err)
 	}
-	covers, err := GetBrands()
+	defer db.Close()
+	brands, err := GetBrandsX()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-
-	for _, cover := range covers {
-		fmt.Println(cover)
-	}
+	fmt.Println(brands)
 }
 
-func GetBrands() ([]Brands_Model, error) {
-	err := db.Ping()
+func GetBrandsX() ([]Brands_Model, error) {
+	query := "select brand_id from production.brands"
+	brand := []Brands_Model{}
+	err := db.Select(&brand, query)
 	if err != nil {
 		return nil, err
 	}
-
-	query := "select * from production.brands"
-	rows, err := db.Query(query)
-	if err != nil {
-		return nil, err
-	}
-
-	brands := []Brands_Model{}
-	for rows.Next() {
-		brand := Brands_Model{}
-		err = rows.Scan(&brand.brand_id, &brand.brand_name)
-		if err != nil {
-			return nil, err
-		}
-		brands = append(brands, brand)
-	}
-
-	defer rows.Close()
-	return brands, nil
+	return brand, nil
 }
