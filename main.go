@@ -6,11 +6,6 @@ import (
 	"github.com/theerasakkeng/GO-CRUD/controllers"
 )
 
-type Brands_Model struct {
-	Brand_Id   int    `json:"brand_id"`
-	Brand_Name string `json:"brand_name"`
-}
-
 func main() {
 
 	r := gin.Default()
@@ -18,6 +13,7 @@ func main() {
 	customer := r.Group("/api/customer")
 	{
 		customer.GET("/getcustomers", controllers.GetCustomers)
+		customer.GET("/getcustomerdetail", controllers.GetCustomerDetails)
 	}
 
 	r.Run()
